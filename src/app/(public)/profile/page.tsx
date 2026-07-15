@@ -167,7 +167,7 @@ export default function ProfilePage() {
                   {isUploadingImage ? (
                     <Loader2 className="w-8 h-8 text-primary animate-spin" />
                   ) : image ? (
-                    <img src={image.startsWith('http') ? image : `http://localhost:5000${image}`} alt={name} className="w-full h-full object-cover" />
+                    <img src={image.startsWith('http') ? image : `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5000'}${image}`} alt={name} className="w-full h-full object-cover" />
                   ) : (
                     <span className="text-4xl font-bold text-primary">{name?.charAt(0).toUpperCase()}</span>
                   )}

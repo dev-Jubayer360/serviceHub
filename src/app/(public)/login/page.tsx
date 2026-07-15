@@ -187,7 +187,6 @@ export default function LoginPage() {
                   onError={() => setError('Google Login Failed')}
                   theme="outline"
                   size="large"
-                  width="100%"
                 />
               </div>
             </div>
