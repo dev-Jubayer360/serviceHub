@@ -22,14 +22,27 @@ function ServicesContent() {
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
   const [location, setLocation] = useState(searchParams.get('location') || '');
   const [category, setCategory] = useState(searchParams.get('category') || '');
+  const [minPrice, setMinPrice] = useState(searchParams.get('minPrice') || '');
+  const [maxPrice, setMaxPrice] = useState(searchParams.get('maxPrice') || '');
+  const [minRating, setMinRating] = useState(searchParams.get('minRating') || '');
 
-  const fetchServices = async (searchParam = searchQuery, locationParam = location, categoryParam = category) => {
+  const fetchServices = async (
+    searchParam = searchQuery, 
+    locationParam = location, 
+    categoryParam = category,
+    minPriceParam = minPrice,
+    maxPriceParam = maxPrice,
+    minRatingParam = minRating
+  ) => {
     setIsLoading(true);
     try {
       const params: any = {};
       if (searchParam) params.search = searchParam;
       if (locationParam) params.location = locationParam;
       if (categoryParam) params.category = categoryParam;
+      if (minPriceParam) params.minPrice = minPriceParam;
+      if (maxPriceParam) params.maxPrice = maxPriceParam;
+      if (minRatingParam) params.minRating = minRatingParam;
       
       const res = await api.get('/services', { params });
       if (res.data.success) {
@@ -54,8 +67,11 @@ function ServicesContent() {
     if (searchQuery) params.append('search', searchQuery);
     if (location) params.append('location', location);
     if (category) params.append('category', category);
+    if (minPrice) params.append('minPrice', minPrice);
+    if (maxPrice) params.append('maxPrice', maxPrice);
+    if (minRating) params.append('minRating', minRating);
     router.replace(`/services?${params.toString()}`);
-    fetchServices(searchQuery, location, category);
+    fetchServices(searchQuery, location, category, minPrice, maxPrice, minRating);
   };
 
   return (
@@ -156,9 +172,21 @@ function ServicesContent() {
             <div>
               <h3 className="font-medium text-foreground mb-3">Price Range</h3>
               <div className="flex items-center gap-2">
-                <input type="number" placeholder="Min" className="w-full h-10 rounded-lg border border-border bg-white px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" />
+                <input 
+                  type="number" 
+                  placeholder="Min" 
+                  value={minPrice}
+                  onChange={(e) => setMinPrice(e.target.value)}
+                  className="w-full h-10 rounded-lg border border-border bg-white px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" 
+                />
                 <span className="text-muted">-</span>
-                <input type="number" placeholder="Max" className="w-full h-10 rounded-lg border border-border bg-white px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" />
+                <input 
+                  type="number" 
+                  placeholder="Max" 
+                  value={maxPrice}
+                  onChange={(e) => setMaxPrice(e.target.value)}
+                  className="w-full h-10 rounded-lg border border-border bg-white px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" 
+                />
               </div>
             </div>
 
@@ -166,9 +194,27 @@ function ServicesContent() {
             <div>
               <h3 className="font-medium text-foreground mb-3">Minimum Rating</h3>
               <div className="space-y-2">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input 
+                    type="radio" 
+                    name="rating" 
+                    checked={minRating === ''}
+                    onChange={() => setMinRating('')}
+                    className="text-primary focus:ring-primary h-4 w-4 border-border" 
+                  />
+                  <span className="flex items-center text-sm text-muted">
+                    Any Rating
+                  </span>
+                </label>
                 {[4.5, 4.0, 3.5, 3.0].map(rating => (
                   <label key={rating} className="flex items-center gap-2 cursor-pointer">
-                    <input type="radio" name="rating" className="text-primary focus:ring-primary h-4 w-4 border-border" />
+                    <input 
+                      type="radio" 
+                      name="rating" 
+                      checked={minRating === String(rating)}
+                      onChange={() => setMinRating(String(rating))}
+                      className="text-primary focus:ring-primary h-4 w-4 border-border" 
+                    />
                     <span className="flex items-center text-sm text-muted">
                       {rating} & up <Star className="w-3 h-3 ml-1 fill-accent text-accent" />
                     </span>
