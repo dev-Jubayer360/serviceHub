@@ -131,13 +131,14 @@ export default function AdminBookingsPage() {
                         ৳{booking.totalAmount}
                       </td>
                       <td className="px-4 py-3">
-                        <Badge variant={
-                          booking.status === 'completed' ? 'success' : 
-                          booking.status === 'cancelled' ? 'destructive' : 
-                          booking.status === 'pending' ? 'accent' : 'primary'
-                        }>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium capitalize ${
+                          booking.status === 'completed' ? 'bg-green-100 text-green-700' :
+                          booking.status === 'cancelled' ? 'bg-red-100 text-red-700' :
+                          booking.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
+                          'bg-blue-100 text-blue-700'
+                        }`}>
                           {booking.status}
-                        </Badge>
+                        </span>
                       </td>
                       <td className="px-4 py-3 text-right">
                         {booking.status === 'pending' || booking.status === 'accepted' ? (

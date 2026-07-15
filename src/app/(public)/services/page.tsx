@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { Search, Filter, SlidersHorizontal, MapPin, Star } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -10,7 +10,7 @@ import api from '@/lib/api';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { districts } from '@/lib/districts';
 
-export default function ServicesPage() {
+function ServicesContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   
@@ -205,5 +205,13 @@ export default function ServicesPage() {
 
       </div>
     </div>
+  );
+}
+
+export default function ServicesPage() {
+  return (
+    <Suspense fallback={<div className="container mx-auto py-10 text-center text-muted">Loading services...</div>}>
+      <ServicesContent />
+    </Suspense>
   );
 }

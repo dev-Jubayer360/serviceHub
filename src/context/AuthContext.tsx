@@ -11,8 +11,10 @@ interface User {
   role: 'customer' | 'provider' | 'admin';
   image?: string;
   phone?: string;
+  provider?: string;
   token?: string;
   rating?: number;
+  address?: any;
   addresses?: {
     city?: string;
     isDefault?: boolean;

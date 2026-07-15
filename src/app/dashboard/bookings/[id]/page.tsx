@@ -12,7 +12,7 @@ import toast from 'react-hot-toast';
 export default function OrderDetailsPage() {
   const { id } = useParams();
   const router = useRouter();
-  const { user, loading: authLoading } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   
   const [booking, setBooking] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
