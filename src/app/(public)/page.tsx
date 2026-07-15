@@ -60,16 +60,23 @@ export default function LandingPage() {
   const [featuredServices, setFeaturedServices] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [topProviders, setTopProviders] = useState<any[]>([]);
+  const [stats, setStats] = useState({
+    verifiedProviders: 0,
+    availableServices: 0,
+    completedBookings: 0,
+    averageRating: 0
+  });
   const [searchQuery, setSearchQuery] = useState('');
   const [location, setLocation] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [servicesRes, categoriesRes, providersRes] = await Promise.all([
+        const [servicesRes, categoriesRes, providersRes, statsRes] = await Promise.all([
           api.get('/services'),
           api.get('/categories'),
-          api.get('/user/providers')
+          api.get('/user/providers'),
+          api.get('/services/stats/public')
         ]);
         
         if (servicesRes.data.success) {
@@ -83,6 +90,10 @@ export default function LandingPage() {
 
         if (providersRes.data.success) {
           setTopProviders(providersRes.data.data.slice(0, 4));
+        }
+
+        if (statsRes.data.success) {
+          setStats(statsRes.data.data);
         }
       } catch (error) {
         console.error('Failed to fetch data', error);
@@ -325,7 +336,7 @@ export default function LandingPage() {
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
               </div>
               <div>
-                <div className="text-2xl font-bold text-foreground">500+</div>
+                <div className="text-2xl font-bold text-foreground">{stats.verifiedProviders}+</div>
                 <div className="text-sm font-medium text-muted">Verified Providers</div>
               </div>
             </div>
@@ -335,7 +346,7 @@ export default function LandingPage() {
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
               </div>
               <div>
-                <div className="text-2xl font-bold text-foreground">1,200+</div>
+                <div className="text-2xl font-bold text-foreground">{stats.availableServices}+</div>
                 <div className="text-sm font-medium text-muted">Available Services</div>
               </div>
             </div>
@@ -345,7 +356,7 @@ export default function LandingPage() {
                 <Calendar className="w-6 h-6" />
               </div>
               <div>
-                <div className="text-2xl font-bold text-foreground">3,500+</div>
+                <div className="text-2xl font-bold text-foreground">{stats.completedBookings}+</div>
                 <div className="text-sm font-medium text-muted">Completed Bookings</div>
               </div>
             </div>
@@ -355,7 +366,7 @@ export default function LandingPage() {
                 <Star className="w-6 h-6" />
               </div>
               <div>
-                <div className="text-2xl font-bold text-foreground">4.8</div>
+                <div className="text-2xl font-bold text-foreground">{stats.averageRating}</div>
                 <div className="text-sm font-medium text-muted">Average Rating</div>
               </div>
             </div>
