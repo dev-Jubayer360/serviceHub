@@ -8,6 +8,7 @@ import { UploadCloud, X } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import api from '@/lib/api';
 import { useRouter } from 'next/navigation';
+import { districts } from '@/lib/districts';
 
 export default function AddServicePage() {
   const { user, isLoading: authLoading } = useAuth();
@@ -20,7 +21,8 @@ export default function AddServicePage() {
     description: '',
     price: '',
     pricingType: 'fixed',
-    location: 'Anywhere in City',
+    location: '',
+    locationCoverage: 'Anywhere in City',
     category: ''
   });
   
@@ -95,6 +97,7 @@ export default function AddServicePage() {
         price: Number(formData.price),
         pricingType: formData.pricingType,
         location: formData.location,
+        locationCoverage: formData.locationCoverage,
         category: formData.category,
         image: imageUrl
       });
@@ -185,11 +188,25 @@ export default function AddServicePage() {
                   <option value="hourly">Hourly Rate</option>
                 </select>
               </div>
-              <div className="space-y-1.5 md:col-span-2">
-                <label className="text-sm font-medium text-foreground">Location Coverage</label>
+              <div className="space-y-1.5 md:col-span-1">
+                <label className="text-sm font-medium text-foreground">Location (District)</label>
                 <select 
                   name="location"
                   value={formData.location}
+                  onChange={handleChange}
+                  className="w-full h-11 rounded-xl border border-border bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary text-foreground"
+                >
+                  <option value="">Select District</option>
+                  {districts.map(district => (
+                    <option key={district} value={district}>{district}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="space-y-1.5 md:col-span-1">
+                <label className="text-sm font-medium text-foreground">Location Coverage</label>
+                <select 
+                  name="locationCoverage"
+                  value={(formData as any).locationCoverage || 'Anywhere in City'}
                   onChange={handleChange}
                   className="w-full h-11 rounded-xl border border-border bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary text-foreground"
                 >

@@ -9,6 +9,7 @@ import { useAuth } from '@/context/AuthContext';
 import api from '@/lib/api';
 import { useRouter, useParams } from 'next/navigation';
 import { toast } from 'react-hot-toast';
+import { districts } from '@/lib/districts';
 
 export default function EditServicePage() {
   const { user, isLoading: authLoading } = useAuth();
@@ -24,7 +25,8 @@ export default function EditServicePage() {
     description: '',
     price: '',
     pricingType: 'fixed',
-    location: 'Anywhere in City',
+    location: '',
+    locationCoverage: 'Anywhere in City',
     category: ''
   });
   
@@ -68,7 +70,8 @@ export default function EditServicePage() {
             description: s.description,
             price: s.price.toString(),
             pricingType: s.pricingType,
-            location: s.location,
+            location: s.location || '',
+            locationCoverage: s.locationCoverage || 'Anywhere in City',
             category: s.category?._id || s.category
           });
           
@@ -131,6 +134,7 @@ export default function EditServicePage() {
         price: Number(formData.price),
         pricingType: formData.pricingType,
         location: formData.location,
+        locationCoverage: (formData as any).locationCoverage,
         category: formData.category,
       };
 
@@ -228,11 +232,25 @@ export default function EditServicePage() {
                   <option value="hourly">Hourly Rate</option>
                 </select>
               </div>
-              <div className="space-y-1.5 md:col-span-2">
-                <label className="text-sm font-medium text-foreground">Location Coverage</label>
+              <div className="space-y-1.5 md:col-span-1">
+                <label className="text-sm font-medium text-foreground">Location (District)</label>
                 <select 
                   name="location"
                   value={formData.location}
+                  onChange={handleChange}
+                  className="w-full h-11 rounded-xl border border-border bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary text-foreground"
+                >
+                  <option value="">Select District</option>
+                  {districts.map(district => (
+                    <option key={district} value={district}>{district}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="space-y-1.5 md:col-span-1">
+                <label className="text-sm font-medium text-foreground">Location Coverage</label>
+                <select 
+                  name="locationCoverage"
+                  value={(formData as any).locationCoverage || 'Anywhere in City'}
                   onChange={handleChange}
                   className="w-full h-11 rounded-xl border border-border bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary text-foreground"
                 >
