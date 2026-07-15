@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
 import api from '@/lib/api';
+import { ResponsiveContainer, LineChart, Line, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Legend } from 'recharts';
 
 export default function AdminDashboardPage() {
   const [stats, setStats] = useState<any>(null);
@@ -75,14 +76,27 @@ export default function AdminDashboardPage() {
         <div className="lg:col-span-2 space-y-6">
 
           {/* Charts Area Placeholder */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg">Booking Analytics</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="h-48 w-full bg-muted/10 rounded-xl border border-border flex items-center justify-center">
-                  <p className="text-muted font-medium text-sm">Booking Chart Placeholder</p>
+                <div className="h-64 w-full mt-2">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={stats.bookingAnalytics || []}>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
+                      <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6b7280' }} dy={10} />
+                      <YAxis yAxisId="left" orientation="left" stroke="#3b82f6" axisLine={false} tickLine={false} tick={{ fontSize: 12 }} />
+                      <YAxis yAxisId="right" orientation="right" stroke="#10b981" axisLine={false} tickLine={false} tick={{ fontSize: 12 }} />
+                      <Tooltip
+                        contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                      />
+                      <Legend wrapperStyle={{ paddingTop: '20px' }} />
+                      <Bar yAxisId="left" dataKey="bookings" name="Bookings" fill="#3b82f6" radius={[4, 4, 0, 0]} barSize={20} />
+                      <Bar yAxisId="right" dataKey="revenue" name="Revenue (৳)" fill="#10b981" radius={[4, 4, 0, 0]} barSize={20} />
+                    </BarChart>
+                  </ResponsiveContainer>
                 </div>
               </CardContent>
             </Card>
@@ -91,8 +105,18 @@ export default function AdminDashboardPage() {
                 <CardTitle className="text-lg">User Growth</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="h-48 w-full bg-muted/10 rounded-xl border border-border flex items-center justify-center">
-                  <p className="text-muted font-medium text-sm">Growth Chart Placeholder</p>
+                <div className="h-64 w-full mt-2">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={stats.userGrowth || []}>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
+                      <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6b7280' }} dy={10} />
+                      <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6b7280' }} />
+                      <Tooltip
+                        contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                      />
+                      <Line type="monotone" dataKey="users" name="New Users" stroke="#8b5cf6" strokeWidth={3} dot={{ r: 4, fill: '#8b5cf6', strokeWidth: 0 }} activeDot={{ r: 6 }} />
+                    </LineChart>
+                  </ResponsiveContainer>
                 </div>
               </CardContent>
             </Card>
