@@ -30,9 +30,14 @@ export default function AdminProvidersPage() {
   }, []);
 
   const handleVerify = async (id: string, isVerified: boolean) => {
-    // In a real app, you'd have an endpoint to verify providers
-    // Here we'll just mock it or assume we update their profile
-    alert(`Provider ${isVerified ? 'verified' : 'unverified'} successfully (Mock)`);
+    try {
+      const res = await api.patch(`/user/${id}/verify-provider`, { isVerifiedProvider: isVerified });
+      if (res.data.success) {
+        setProviders(prev => prev.map(p => p._id === id ? { ...p, isVerifiedProvider: isVerified } : p));
+      }
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'Failed to update provider status');
+    }
   };
 
   const filteredProviders = providers.filter(p => 
