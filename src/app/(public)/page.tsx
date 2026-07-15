@@ -26,44 +26,7 @@ const MOCK_CATEGORIES = [
   { name: 'Beauty', icon: Scissors, count: '50+', iconClass: 'text-teal-500', bgClass: 'bg-teal-50 group-hover:bg-teal-500' },
 ];
 
-const MOCK_PROVIDERS = [
-  {
-    id: 'p1',
-    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1974&auto=format&fit=crop',
-    name: 'Ahmed Hasan',
-    specialization: 'Master Electrician',
-    experience: '8 Years',
-    rating: 4.9,
-    completedJobs: 450
-  },
-  {
-    id: 'p2',
-    image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=1976&auto=format&fit=crop',
-    name: 'Nusrat Jahan',
-    specialization: 'Professional Cleaner',
-    experience: '5 Years',
-    rating: 4.8,
-    completedJobs: 320
-  },
-  {
-    id: 'p3',
-    image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=1974&auto=format&fit=crop',
-    name: 'Kamrul Islam',
-    specialization: 'Plumbing Expert',
-    experience: '12 Years',
-    rating: 4.7,
-    completedJobs: 890
-  },
-  {
-    id: 'p4',
-    image: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=1961&auto=format&fit=crop',
-    name: 'Sadia Rahman',
-    specialization: 'Event Photographer',
-    experience: '6 Years',
-    rating: 4.9,
-    completedJobs: 210
-  }
-];
+
 
 const MOCK_REVIEWS = [
   {
@@ -96,15 +59,17 @@ export default function LandingPage() {
   const router = useRouter();
   const [featuredServices, setFeaturedServices] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
+  const [topProviders, setTopProviders] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [location, setLocation] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [servicesRes, categoriesRes] = await Promise.all([
+        const [servicesRes, categoriesRes, providersRes] = await Promise.all([
           api.get('/services'),
-          api.get('/categories')
+          api.get('/categories'),
+          api.get('/user/providers')
         ]);
         
         if (servicesRes.data.success) {
@@ -114,6 +79,10 @@ export default function LandingPage() {
 
         if (categoriesRes.data.success) {
           setCategories(categoriesRes.data.data);
+        }
+
+        if (providersRes.data.success) {
+          setTopProviders(providersRes.data.data.slice(0, 4));
         }
       } catch (error) {
         console.error('Failed to fetch data', error);
@@ -408,9 +377,22 @@ export default function LandingPage() {
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {MOCK_PROVIDERS.map((provider) => (
-              <ProviderCard key={provider.id} {...provider} />
-            ))}
+            {topProviders.length > 0 ? (
+              topProviders.map((provider) => (
+                <ProviderCard 
+                  key={provider._id} 
+                  id={provider._id}
+                  name={provider.name}
+                  image={provider.image || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1974&auto=format&fit=crop'}
+                  specialization="Professional Provider"
+                  experience="Verified Expert"
+                  rating={provider.rating || 0}
+                  completedJobs={provider.completedJobs || 0}
+                />
+              ))
+            ) : (
+              <div className="col-span-4 text-center py-10 text-muted">Loading providers...</div>
+            )}
           </div>
         </div>
       </section>
