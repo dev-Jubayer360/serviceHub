@@ -66,13 +66,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('user', JSON.stringify(userData));
   };
 
-  const logout = () => {
+  const logout = async () => {
+    // Call backend logout first while token is still in localStorage
+    try {
+      await api.post('/auth/logout');
+    } catch (err) {
+      // Ignore
+    }
     setUser(null);
     setToken(null);
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    // Call backend logout just in case, though JWT is stateless
-    api.post('/auth/logout').catch(() => {});
   };
 
   return (
