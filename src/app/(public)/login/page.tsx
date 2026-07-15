@@ -135,6 +135,21 @@ export default function LoginPage() {
               <Button type="submit" variant="primary" fullWidth size="lg" disabled={isLoading}>
                 {isLoading ? 'Signing in...' : 'Sign in'}
               </Button>
+
+              <div className="pt-4 border-t border-border/50">
+                <p className="text-xs text-center text-muted mb-3">Quick Login (No OTP required)</p>
+                <div className="grid grid-cols-3 gap-2">
+                  <Button type="button" variant="outline" size="sm" className="text-xs px-1" onClick={() => { setEmail('user@demo.com'); setPassword('123456'); }}>
+                    User
+                  </Button>
+                  <Button type="button" variant="outline" size="sm" className="text-xs px-1" onClick={() => { setEmail('provider@demo.com'); setPassword('123456'); }}>
+                    Provider
+                  </Button>
+                  <Button type="button" variant="outline" size="sm" className="text-xs px-1" onClick={() => { setEmail('admin@demo.com'); setPassword('123456'); }}>
+                    Admin
+                  </Button>
+                </div>
+              </div>
             </form>
           ) : (
             <form className="space-y-6" onSubmit={handleOtpSubmit}>
