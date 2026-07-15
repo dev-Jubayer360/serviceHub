@@ -16,17 +16,20 @@ function ServicesContent() {
   
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
   const [services, setServices] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
   const [location, setLocation] = useState(searchParams.get('location') || '');
+  const [category, setCategory] = useState(searchParams.get('category') || '');
 
-  const fetchServices = async (searchParam = searchQuery, locationParam = location) => {
+  const fetchServices = async (searchParam = searchQuery, locationParam = location, categoryParam = category) => {
     setIsLoading(true);
     try {
       const params: any = {};
       if (searchParam) params.search = searchParam;
       if (locationParam) params.location = locationParam;
+      if (categoryParam) params.category = categoryParam;
       
       const res = await api.get('/services', { params });
       if (res.data.success) {
@@ -41,14 +44,18 @@ function ServicesContent() {
 
   useEffect(() => {
     fetchServices();
+    api.get('/categories').then(res => {
+      if (res.data.success) setCategories(res.data.data);
+    }).catch(console.error);
   }, []);
 
   const handleApplyFilters = () => {
     const params = new URLSearchParams();
     if (searchQuery) params.append('search', searchQuery);
     if (location) params.append('location', location);
+    if (category) params.append('category', category);
     router.replace(`/services?${params.toString()}`);
-    fetchServices(searchQuery, location);
+    fetchServices(searchQuery, location, category);
   };
 
   return (
@@ -102,10 +109,26 @@ function ServicesContent() {
             <div>
               <h3 className="font-medium text-foreground mb-3">Category</h3>
               <div className="space-y-2">
-                {['All Categories', 'Home Cleaning', 'Electrical', 'Plumbing', 'AC Repair', 'Photography'].map(cat => (
-                  <label key={cat} className="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" className="rounded text-primary focus:ring-primary h-4 w-4 border-border" />
-                    <span className="text-sm text-muted hover:text-foreground">{cat}</span>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input 
+                    type="radio" 
+                    name="category"
+                    checked={category === ''}
+                    onChange={() => setCategory('')}
+                    className="text-primary focus:ring-primary h-4 w-4 border-border" 
+                  />
+                  <span className="text-sm text-muted hover:text-foreground">All Categories</span>
+                </label>
+                {categories.map(cat => (
+                  <label key={cat._id} className="flex items-center gap-2 cursor-pointer">
+                    <input 
+                      type="radio" 
+                      name="category"
+                      checked={category === cat.slug}
+                      onChange={() => setCategory(cat.slug)}
+                      className="text-primary focus:ring-primary h-4 w-4 border-border" 
+                    />
+                    <span className="text-sm text-muted hover:text-foreground">{cat.name}</span>
                   </label>
                 ))}
               </div>

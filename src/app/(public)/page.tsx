@@ -95,9 +95,7 @@ const MOCK_REVIEWS = [
 export default function LandingPage() {
   const router = useRouter();
   const [featuredServices, setFeaturedServices] = useState<any[]>([]);
-  const [allServices, setAllServices] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [location, setLocation] = useState('');
 
@@ -110,9 +108,8 @@ export default function LandingPage() {
         ]);
         
         if (servicesRes.data.success) {
-          const fetchedServices = servicesRes.data.data.services || servicesRes.data.data;
-          setAllServices(fetchedServices);
-          setFeaturedServices(fetchedServices.slice(0, 8)); // Default show 8 services
+          const allServices = servicesRes.data.data.services || servicesRes.data.data;
+          setFeaturedServices(allServices.slice(0, 4));
         }
 
         if (categoriesRes.data.success) {
@@ -124,18 +121,6 @@ export default function LandingPage() {
     };
     fetchData();
   }, []);
-
-  useEffect(() => {
-    if (selectedCategory === 'All') {
-      setFeaturedServices(allServices.slice(0, 8));
-    } else {
-      const filtered = allServices.filter(s => 
-        s.category?._id === selectedCategory || 
-        s.category?.name?.toLowerCase() === selectedCategory.toLowerCase()
-      );
-      setFeaturedServices(filtered);
-    }
-  }, [selectedCategory, allServices]);
 
   const handleSearch = () => {
     const params = new URLSearchParams();
@@ -264,15 +249,8 @@ export default function LandingPage() {
           
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 items-stretch">
             {categories.length > 0 ? categories.slice(0, 8).map((category) => (
-              <div 
-                key={category._id} 
-                className="block h-full"
-                onClick={() => {
-                  setSelectedCategory(prev => prev === category._id ? 'All' : category._id);
-                  document.getElementById('featured-services')?.scrollIntoView({ behavior: 'smooth' });
-                }}
-              >
-                <Card className={`text-center hover:border-primary hover:shadow-md transition-all duration-300 group cursor-pointer h-full flex flex-col justify-center ${selectedCategory === category._id ? 'border-primary shadow-md ring-1 ring-primary' : ''}`}>
+              <Link href={`/services?category=${category.slug}`} key={category._id} className="block h-full">
+                <Card className="text-center hover:border-primary hover:shadow-md transition-all duration-300 group cursor-pointer h-full flex flex-col justify-center">
                   <CardContent className="p-4 sm:p-6 flex flex-col items-center justify-center mt-0 pt-4 sm:pt-6">
                     <div className="w-12 h-12 rounded-full flex items-center justify-center mb-4 transition-colors bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white overflow-hidden shrink-0">
                       {category.image ? (
@@ -285,17 +263,10 @@ export default function LandingPage() {
                     {category.numOfServices !== undefined && <p className="text-xs text-muted">{category.numOfServices} Services</p>}
                   </CardContent>
                 </Card>
-              </div>
+              </Link>
             )) : MOCK_CATEGORIES.map((category) => (
-              <div 
-                key={category.name} 
-                className="block h-full"
-                onClick={() => {
-                  setSelectedCategory(prev => prev === category.name.toLowerCase() ? 'All' : category.name.toLowerCase());
-                  document.getElementById('featured-services')?.scrollIntoView({ behavior: 'smooth' });
-                }}
-              >
-                <Card className={`text-center hover:border-primary hover:shadow-md transition-all duration-300 group cursor-pointer h-full flex flex-col justify-center ${selectedCategory === category.name.toLowerCase() ? 'border-primary shadow-md ring-1 ring-primary' : ''}`}>
+              <Link href={`/services?category=${category.name.toLowerCase()}`} key={category.name} className="block h-full">
+                <Card className="text-center hover:border-primary hover:shadow-md transition-all duration-300 group cursor-pointer h-full flex flex-col justify-center">
                   <CardContent className="p-4 sm:p-6 flex flex-col items-center justify-center mt-0 pt-4 sm:pt-6">
                     <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-4 transition-colors ${category.bgClass} ${category.iconClass} group-hover:text-white shrink-0`}>
                       <category.icon className="w-6 h-6" />
@@ -304,14 +275,14 @@ export default function LandingPage() {
                     <p className="text-xs text-muted">{category.count} Services</p>
                   </CardContent>
                 </Card>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
       </section>
 
       {/* FEATURED SERVICES */}
-      <section id="featured-services" className="py-20 bg-background">
+      <section className="py-20 bg-background">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-end mb-12">
             <div>
@@ -338,9 +309,7 @@ export default function LandingPage() {
                 image={service.image || service.images?.[0] || 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=2070'} 
               />
             )) : (
-              <div className="col-span-4 text-center py-10 text-muted">
-                {allServices.length === 0 ? 'Loading featured services...' : 'No services found in this category.'}
-              </div>
+              <div className="col-span-4 text-center py-10 text-muted">Loading featured services...</div>
             )}
           </div>
         </div>
